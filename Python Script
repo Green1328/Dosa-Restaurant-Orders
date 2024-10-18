@@ -1,0 +1,55 @@
+#1. Reads the JSON orders from a file whose name is passed as the first positional argument
+
+import json
+import argparse 
+
+#Argparse lets you pass in user defined arguments to your code before it runs
+#argparse is used to handle the first positional argument (the filename)
+
+parser = argparse.ArgumentParser(description= 'Reads the order of Dosa Restaurant from a JSON file')
+parser.add_argument('filename', type = str, help ='The name of the JSON file containing the orders')
+args = parser.parse_args()
+
+
+#Read the JSON file
+with open("args.filename", "r") as f:
+    orders = json.load(f)
+
+
+#2. Creats a new JSON file named customers.json that contains an object with phone numbers as keys
+#and customers names as values. 
+#The phone number and customer name should both be strings and the phone number
+#should be of the form xxx-xxx-xxxx
+
+customers_data ={}
+for order in orders:
+    phone_number = order["number"]
+    customer_name = order["name"]
+    customers_data[phone_number] = customer_name
+
+with open("customers.json", "w") as f:
+    json.dump(customers_data, f, indent=4)
+print("customers.json file created")
+
+#3. Create a new JSON file named items.json that contains an object with item names(string) 
+#as keys and an object with price (key=price, number) and number of times it has been ordered
+#(key=orders, number) as a value: 
+
+items = {}
+
+for order in orders:
+    for item in order[ "items"]:
+        item_name = item["name"]
+        item_price = item["price"]
+
+        if item_name in items:
+            items[item_name]["orders"] +=1 #increments the count if item is already present
+        else:
+            items[item_name] = {       #adds new item to dictionary
+                "price": item_price,
+                "orders": 1
+            }
+
+with open("items.json", "w") as f: 
+    json.dumps(items,f, indent =4 )
+print("items.json file created")
